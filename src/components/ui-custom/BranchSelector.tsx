@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Branch } from "@/types/auth";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -11,40 +11,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-
-// Mock branches data
-const mockBranches: Branch[] = [
-  {
-    id: "1",
-    name: "Main Branch",
-    location: "123 Main St, City",
-    description: "Our main church branch",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    name: "East Side Branch",
-    location: "456 East St, City",
-    description: "Our east side branch",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "3",
-    name: "West Side Branch",
-    location: "789 West St, City",
-    description: "Our west side branch",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
+import { fetchBranches } from "@/services/supabaseAuth";
 
 const BranchSelector: React.FC = () => {
   const { authState, switchBranch } = useAuth();
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [isSwitching, setIsSwitching] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    const loadBranches = async () => {
+      setIsLoading(true);
+      try {
+        const branchData = await fetchBranches();
+        setBranches(branchData);
+      } catch (error) {
+        console.error("Failed to load branches:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadBranches();
+  }, []);
   
   const handleBranchChange = async (branchId: string) => {
+    if (branchId === authState.branch?.id) return;
+    
     setIsSwitching(true);
     try {
       await switchBranch(branchId);
@@ -55,6 +48,8 @@ const BranchSelector: React.FC = () => {
     }
   };
   
+  if (!authState.isAuthenticated) return null;
+  
   return (
     <div className="w-full max-w-xs">
       <label className="block text-sm font-medium mb-1" htmlFor="branch-selector">
@@ -64,20 +59,20 @@ const BranchSelector: React.FC = () => {
         <Select 
           value={authState.branch?.id} 
           onValueChange={handleBranchChange}
-          disabled={isSwitching}
+          disabled={isSwitching || isLoading}
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Branch" />
           </SelectTrigger>
           <SelectContent>
-            {mockBranches.map((branch) => (
+            {branches.map((branch) => (
               <SelectItem key={branch.id} value={branch.id}>
                 {branch.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {isSwitching && <Loader2 className="h-4 w-4 animate-spin" />}
+        {(isSwitching || isLoading) && <Loader2 className="h-4 w-4 animate-spin" />}
       </div>
     </div>
   );
