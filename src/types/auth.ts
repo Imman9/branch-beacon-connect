@@ -1,17 +1,16 @@
-
 export interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  branchId: string;
+  branchId?: string;
   role: UserRole;
   avatar?: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export type UserRole = "admin" | "branch_admin" | "member" | "guest";
+export type UserRole = 'admin' | 'branch_admin' | 'member' | 'guest';
 
 export interface Branch {
   id: string;

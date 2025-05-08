@@ -1,6 +1,5 @@
-
 import { supabase } from "@/integrations/supabase/client";
-import { User, Branch, AuthState } from "@/types/auth";
+import { User, Branch, AuthState, UserRole } from "@/types/auth";
 
 export interface SignUpCredentials {
   email: string;
@@ -46,7 +45,7 @@ export const fetchUserProfile = async (userId: string): Promise<User | null> => 
     firstName: data.first_name,
     lastName: data.last_name,
     branchId: data.branch_id,
-    role: data.role,
+    role: data.role as UserRole,
     avatar: data.avatar,
     createdAt: data.created_at,
     updatedAt: data.updated_at
