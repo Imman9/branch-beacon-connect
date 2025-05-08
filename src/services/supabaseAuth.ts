@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { User, Branch, AuthState, UserRole } from "@/types/auth";
 
@@ -52,26 +53,32 @@ export const fetchUserProfile = async (userId: string): Promise<User | null> => 
   };
 };
 
-// Fetch all branches for branch selector
+// Fetch all branches for branch selector - Modified to work for unauthenticated users
 export const fetchBranches = async (): Promise<Branch[]> => {
-  const { data, error } = await supabase
-    .from("branches")
-    .select("*");
+  try {
+    // Use the anon key for this request since it's needed for registration
+    const { data, error } = await supabase
+      .from("branches")
+      .select("*");
 
-  if (error) {
+    if (error) {
+      console.error("Error fetching branches:", error);
+      return [];
+    }
+
+    return data.map(branch => ({
+      id: branch.id,
+      name: branch.name,
+      location: branch.location,
+      description: branch.description,
+      logo: branch.logo,
+      createdAt: branch.created_at,
+      updatedAt: branch.updated_at
+    }));
+  } catch (error) {
     console.error("Error fetching branches:", error);
     return [];
   }
-
-  return data.map(branch => ({
-    id: branch.id,
-    name: branch.name,
-    location: branch.location,
-    description: branch.description,
-    logo: branch.logo,
-    createdAt: branch.created_at,
-    updatedAt: branch.updated_at
-  }));
 };
 
 // Fetch a specific branch by ID

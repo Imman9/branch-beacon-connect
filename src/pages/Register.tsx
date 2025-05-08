@@ -33,6 +33,7 @@ type RegisterValues = z.infer<typeof registerSchema>;
 const Register = () => {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isLoadingBranches, setIsLoadingBranches] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -52,8 +53,17 @@ const Register = () => {
 
   useEffect(() => {
     const loadBranches = async () => {
-      const branchData = await fetchBranches();
-      setBranches(branchData);
+      setIsLoadingBranches(true);
+      try {
+        const branchData = await fetchBranches();
+        console.log("Loaded branches:", branchData);
+        setBranches(branchData);
+      } catch (err) {
+        console.error("Failed to load branches:", err);
+        setError("Failed to load branches. Please try again later.");
+      } finally {
+        setIsLoadingBranches(false);
+      }
     };
 
     loadBranches();
@@ -161,23 +171,34 @@ const Register = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Select Your Branch</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a branch" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {branches.map((branch) => (
-                            <SelectItem key={branch.id} value={branch.id}>
-                              {branch.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      {isLoadingBranches ? (
+                        <div className="flex items-center space-x-2">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span className="text-sm text-muted-foreground">Loading branches...</span>
+                        </div>
+                      ) : branches.length > 0 ? (
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a branch" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {branches.map((branch) => (
+                              <SelectItem key={branch.id} value={branch.id}>
+                                {branch.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="text-sm text-destructive">
+                          No branches available. Please try again later.
+                        </div>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
