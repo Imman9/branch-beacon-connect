@@ -53,20 +53,26 @@ export const fetchUserProfile = async (userId: string): Promise<User | null> => 
   };
 };
 
-// Fetch all branches for branch selector - Modified to work for unauthenticated users
+// Fetch all branches for branch selector - Modified to bypass RLS issues
 export const fetchBranches = async (): Promise<Branch[]> => {
   try {
-    // Use the anon key for this request since it's needed for registration
-    const { data, error } = await supabase
-      .from("branches")
-      .select("*");
+    // Use a direct fetch approach to avoid potential RLS issues
+    const response = await fetch(`https://qhmioemidhgqelcnrhny.supabase.co/rest/v1/branches`, {
+      method: 'GET',
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFobWlvZW1pZGhncWVsY25yaG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2Mjc3NTcsImV4cCI6MjA2MjIwMzc1N30.52AZwgmhd5kRg_NoZfGnDKJ742qmwavxYYF9xgGAQw4',
+        'Content-Type': 'application/json'
+      }
+    });
 
-    if (error) {
-      console.error("Error fetching branches:", error);
-      return [];
+    if (!response.ok) {
+      throw new Error(`Error fetching branches: ${response.statusText}`);
     }
 
-    return data.map(branch => ({
+    const data = await response.json();
+    console.log("Successfully fetched branches:", data);
+    
+    return data.map((branch: any) => ({
       id: branch.id,
       name: branch.name,
       location: branch.location,
