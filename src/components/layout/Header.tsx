@@ -24,9 +24,14 @@ const Header: React.FC = () => {
     <header className="sticky top-0 z-30 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center justify-between border-b border-border px-4">
         <div className="flex items-center gap-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="font-serif text-2xl font-medium text-church-700">
-              Church Connect
+          <Link to="/" className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/f8db5e17-fdcb-4da8-a244-2ec581d2a72c.png" 
+              alt="Repentance and Holiness logo" 
+              className="h-10 w-10 object-contain" 
+            />
+            <div className="font-serif text-lg md:text-xl font-medium text-church-700">
+              Repentance and Holiness
             </div>
           </Link>
         </div>

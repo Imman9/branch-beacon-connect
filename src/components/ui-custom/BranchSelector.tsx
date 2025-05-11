@@ -10,30 +10,50 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCcw } from "lucide-react";
 import { fetchBranches } from "@/services/supabaseAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const BranchSelector: React.FC = () => {
   const { authState, switchBranch } = useAuth();
+  const { toast } = useToast();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [isSwitching, setIsSwitching] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
   
   useEffect(() => {
     const loadBranches = async () => {
       setIsLoading(true);
       try {
         const branchData = await fetchBranches();
+        console.log("Branches loaded:", branchData);
         setBranches(branchData);
+        if (branchData.length === 0) {
+          toast({
+            title: "No branches available",
+            description: "Please try refreshing or contact an administrator",
+            variant: "destructive"
+          });
+        }
       } catch (error) {
         console.error("Failed to load branches:", error);
+        toast({
+          title: "Failed to load branches",
+          description: "Please try refreshing or contact an administrator",
+          variant: "destructive"
+        });
       } finally {
         setIsLoading(false);
       }
     };
 
     loadBranches();
-  }, []);
+  }, [retryCount, toast]);
+  
+  const handleRefresh = () => {
+    setRetryCount(prev => prev + 1);
+  };
   
   const handleBranchChange = async (branchId: string) => {
     if (branchId === authState.branch?.id) return;
@@ -65,14 +85,29 @@ const BranchSelector: React.FC = () => {
             <SelectValue placeholder="Select Branch" />
           </SelectTrigger>
           <SelectContent>
-            {branches.map((branch) => (
+            {branches.length > 0 ? branches.map((branch) => (
               <SelectItem key={branch.id} value={branch.id}>
                 {branch.name}
               </SelectItem>
-            ))}
+            )) : (
+              <div className="p-2 text-sm text-muted-foreground">
+                No branches available
+              </div>
+            )}
           </SelectContent>
         </Select>
-        {(isSwitching || isLoading) && <Loader2 className="h-4 w-4 animate-spin" />}
+        {isLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleRefresh} 
+            title="Refresh branches"
+          >
+            <RefreshCcw className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </div>
   );

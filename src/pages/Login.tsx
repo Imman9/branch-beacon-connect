@@ -4,7 +4,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
@@ -54,7 +53,14 @@ const Login = () => {
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-church-700 mb-2">Church Connect</h1>
+          <div className="flex justify-center mb-3">
+            <img 
+              src="/lovable-uploads/f8db5e17-fdcb-4da8-a244-2ec581d2a72c.png" 
+              alt="Repentance and Holiness" 
+              className="h-16 w-16 object-contain" 
+            />
+          </div>
+          <h1 className="text-2xl font-bold text-church-700 mb-2">Repentance and Holiness</h1>
           <p className="text-muted-foreground">Sign in to access your account</p>
         </div>
         
