@@ -1,7 +1,7 @@
 
 import { Group } from "@/types/content";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Users, Lock, Unlock } from "lucide-react";
+import { Users, Lock, Unlock, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 
