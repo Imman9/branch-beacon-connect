@@ -3,78 +3,90 @@ import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import Section from "@/components/ui-custom/Section";
 import Hero from "@/components/ui-custom/Hero";
-import ForumCard from "@/components/features/ForumCard";
+import GroupCard from "@/components/features/GroupCard";
 import CardGrid from "@/components/ui-custom/CardGrid";
-import { MessageSquare, Plus } from "lucide-react";
+import { Users, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Forum } from "@/types/content";
+import { Group } from "@/types/content";
 
-// Mock forums data
-const mockForums: Forum[] = [
+// Mock groups data
+const mockGroups: Group[] = [
   {
     id: "1",
-    title: "Bible Study",
-    description: "Discuss various Bible passages and their interpretations.",
+    name: "Youth Group",
+    description: "A community for young adults to connect, share experiences, and grow together in faith.",
     branchId: "1",
     createdBy: "admin",
+    isOpen: true,
+    memberCount: 24,
+    admins: ["admin", "user-1", "user-2"],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
     id: "2",
-    title: "Prayer Requests",
-    description: "Share your prayer needs and pray for others in our community.",
+    name: "Prayer Warriors",
+    description: "Dedicated to intercessory prayer for our church, community, and global needs.",
     branchId: "1",
     createdBy: "admin",
+    isOpen: true,
+    memberCount: 18,
+    admins: ["admin"],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
     id: "3",
-    title: "Community Outreach",
-    description: "Discuss ways we can serve our local community and make a difference.",
+    name: "Bible Study",
+    description: "Deep dive into scripture with weekly studies and discussions on various books of the Bible.",
     branchId: "1",
     createdBy: "admin",
+    isOpen: false,
+    memberCount: 12,
+    admins: ["admin", "user-3"],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
     id: "4",
-    title: "Worship Team",
-    description: "For worship team members to coordinate and discuss music.",
+    name: "Worship Team",
+    description: "For members of the worship team to coordinate, share resources, and plan services.",
     branchId: "1",
     createdBy: "admin",
+    isOpen: true,
+    memberCount: 8,
+    admins: ["admin", "user-4", "user-5"],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
 ];
 
 const ForumsPage = () => {
-  const [forums] = useState<Forum[]>(mockForums);
+  const [groups] = useState<Group[]>(mockGroups);
 
   return (
     <Layout>
       <Hero 
-        title="Community Forums" 
-        subtitle="Connect with other members, ask questions, and share insights"
+        title="Church Groups" 
+        subtitle="Join a group, connect with members, and grow together in community"
         imageUrl="https://images.unsplash.com/photo-1587614380862-0294272c5a49?auto=format&fit=crop&q=80&w=1470"
       />
       
       <Section>
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center">
-            <MessageSquare className="h-6 w-6 mr-2 text-church-600" />
-            <h2 className="text-2xl font-bold">Discussion Forums</h2>
+            <Users className="h-6 w-6 mr-2 text-church-600" />
+            <h2 className="text-2xl font-bold">Community Groups</h2>
           </div>
           <Button className="flex items-center">
             <Plus className="h-4 w-4 mr-2" />
-            New Topic
+            Join Group
           </Button>
         </div>
         
         <CardGrid>
-          {forums.map((forum) => (
-            <ForumCard key={forum.id} forum={forum} />
+          {groups.map((group) => (
+            <GroupCard key={group.id} group={group} />
           ))}
         </CardGrid>
       </Section>

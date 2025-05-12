@@ -106,3 +106,16 @@ export interface Media {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Group {
+  id: string;
+  name: string;
+  description: string;
+  branchId: string;
+  createdBy: string;
+  isOpen: boolean;
+  memberCount: number;
+  admins: string[];
+  createdAt: string;
+  updatedAt: string;
+}
