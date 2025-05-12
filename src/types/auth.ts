@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   email: string;
@@ -27,4 +28,16 @@ export interface AuthState {
   branch: Branch | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+}
+
+export interface UserProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  avatar?: string;
+  branchId?: string;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
 }

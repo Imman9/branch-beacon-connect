@@ -19,6 +19,7 @@ import Music from "./pages/Music";
 import Radio from "./pages/Radio";
 import Announcements from "./pages/Announcements";
 import Forums from "./pages/Forums";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/radio" element={<Radio />} />
               <Route path="/announcements" element={<Announcements />} />
               <Route path="/forums" element={<Forums />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
