@@ -12,6 +12,13 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Events from "./pages/Events";
+import Sermons from "./pages/Sermons";
+import Media from "./pages/Media";
+import Music from "./pages/Music";
+import Radio from "./pages/Radio";
+import Announcements from "./pages/Announcements";
+import Forums from "./pages/Forums";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,7 +38,13 @@ const App = () => (
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              {/* Add other protected routes here */}
+              <Route path="/events" element={<Events />} />
+              <Route path="/sermons" element={<Sermons />} />
+              <Route path="/media" element={<Media />} />
+              <Route path="/music" element={<Music />} />
+              <Route path="/radio" element={<Radio />} />
+              <Route path="/announcements" element={<Announcements />} />
+              <Route path="/forums" element={<Forums />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

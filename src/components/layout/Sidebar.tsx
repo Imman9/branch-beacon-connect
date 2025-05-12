@@ -11,11 +11,11 @@ import {
   MessageSquare,
   Mic,
   Music,
-  Newspaper,
   User,
   Users,
   Bell,
   FileAudio,
+  Radio,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -87,8 +87,8 @@ const Sidebar: React.FC = () => {
         <SidebarLink to="/sermons" icon={Mic} label="Sermons" isCollapsed={isCollapsed} />
         <SidebarLink to="/media" icon={FileAudio} label="Media" isCollapsed={isCollapsed} />
         <SidebarLink to="/music" icon={Music} label="Music" isCollapsed={isCollapsed} />
+        <SidebarLink to="/radio" icon={Radio} label="Radio" isCollapsed={isCollapsed} />
         <SidebarLink to="/announcements" icon={Bell} label="Announcements" isCollapsed={isCollapsed} />
-        <SidebarLink to="/blog" icon={Newspaper} label="Blog" isCollapsed={isCollapsed} />
         <SidebarLink to="/forums" icon={MessageSquare} label="Forums" isCollapsed={isCollapsed} />
         
         {/* Admin specific links */}
