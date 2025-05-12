@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -37,7 +36,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { register } = useAuth();
+  const { register, authState } = useAuth();
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -69,6 +68,13 @@ const Register = () => {
     loadBranches();
   }, []);
 
+  // Redirect to dashboard if user is authenticated
+  useEffect(() => {
+    if (authState.isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [authState.isAuthenticated, navigate]);
+
   const handleSubmit = async (values: RegisterValues) => {
     setError(null);
     setIsLoading(true);
@@ -82,15 +88,11 @@ const Register = () => {
         branchId: values.branchId,
       });
       
-      toast({
-        title: "Registration successful",
-        description: "Your account has been created! Please sign in.",
-      });
-      navigate("/login");
+      // No need to navigate - the auth listener will redirect if login succeeds
+      // For development, we should be automatically logged in now
     } catch (err) {
       const error = err as Error;
       setError(error.message || "Registration failed. Please try again.");
-    } finally {
       setIsLoading(false);
     }
   };
@@ -99,7 +101,7 @@ const Register = () => {
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-church-700 mb-2">Church Connect</h1>
+          <h1 className="text-2xl font-bold text-church-700 mb-2">Repentance and Holiness</h1>
           <p className="text-muted-foreground">Create a new account</p>
         </div>
         
@@ -243,9 +245,9 @@ const Register = () => {
                 <Button 
                   type="submit" 
                   className="w-full church-gradient"
-                  disabled={isLoading}
+                  disabled={isLoading || authState.isLoading}
                 >
-                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                  {(isLoading || authState.isLoading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   Register
                 </Button>
               </form>

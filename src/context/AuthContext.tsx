@@ -115,7 +115,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Auth state will be updated by the listener
       toast({
         title: "Login successful",
-        description: "Welcome back to Church Connect!",
+        description: "Welcome back to Repentance and Holiness!",
       });
     } catch (error) {
       const err = error as Error;
@@ -133,12 +133,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setAuthState({ ...authState, isLoading: true });
     
     try {
-      await signUpWithEmail(credentials);
-      toast({
-        title: "Registration successful",
-        description: "Please check your email to verify your account.",
-      });
-      setAuthState({ ...authState, isLoading: false });
+      const response = await signUpWithEmail(credentials);
+      
+      // In development mode, sign in the user automatically after registration
+      // instead of waiting for email confirmation
+      if (response.user) {
+        toast({
+          title: "Registration successful",
+          description: "Your account has been created and you're now logged in.",
+        });
+        // The auth listener will handle setting up the session
+      } else {
+        setAuthState({ ...authState, isLoading: false });
+        toast({
+          title: "Registration successful",
+          description: "Please check your email to verify your account.",
+        });
+      }
     } catch (error) {
       const err = error as Error;
       setAuthState({ ...authState, isLoading: false });

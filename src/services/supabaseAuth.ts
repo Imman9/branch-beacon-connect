@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { User, Branch, AuthState, UserRole } from "@/types/auth";
 
@@ -177,6 +178,7 @@ export const loginWithEmail = async ({ email, password }: LoginCredentials) => {
 
 // Signup with email, password, and profile info
 export const signUpWithEmail = async ({ email, password, firstName, lastName, branchId }: SignUpCredentials) => {
+  // For development, we'll sign up with auto confirm enabled
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -186,10 +188,31 @@ export const signUpWithEmail = async ({ email, password, firstName, lastName, br
         last_name: lastName,
         branch_id: branchId,
       },
+      // This enables auto confirmation for development only
+      emailRedirectTo: window.location.origin,
     },
   });
 
   if (error) throw error;
+  
+  // If we have a user but no session, try to sign in immediately for development
+  if (data.user && !data.session) {
+    try {
+      // Auto sign-in for development environment
+      const signInResult = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (signInResult.error) throw signInResult.error;
+      return signInResult.data;
+    } catch (signInError) {
+      console.error("Auto sign-in failed:", signInError);
+      // Return the original sign-up data if auto-login fails
+      return data;
+    }
+  }
+  
   return data;
 };
 
