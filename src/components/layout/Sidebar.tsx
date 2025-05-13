@@ -28,7 +28,7 @@ interface SidebarLinkProps {
 
 const SidebarLink: React.FC<SidebarLinkProps> = ({ to, icon: Icon, label, isCollapsed }) => {
   return (
-    <Link to={to}>
+    <Link to={to} className="no-underline">
       <Button 
         variant="ghost" 
         className={cn("w-full justify-start mb-1", 
@@ -64,7 +64,7 @@ const Sidebar: React.FC = () => {
       {/* Sidebar header */}
       <div className="p-4 flex items-center justify-between border-b border-sidebar-border">
         {!isCollapsed && (
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center no-underline">
             <h1 className="text-xl font-medium text-sidebar-foreground">
               {authState.branch?.name || "Church App"}
             </h1>
