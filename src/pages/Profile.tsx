@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { UserProfile } from "@/types/auth";
-import { BranchSelector } from "@/components/ui-custom/BranchSelector";
+import BranchSelector from "@/components/ui-custom/BranchSelector";
 import { UserRound, Mail, UploadCloud } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
