@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +29,7 @@ const profileSchema = z.object({
 type ProfileValues = z.infer<typeof profileSchema>;
 
 const BranchSelector = ({ onBranchSelect }: { onBranchSelect: (branchId: string) => void }) => {
-  const [branches, setBranches] = useState([]);
+  const [branches, setBranches] = useState<any[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<string | undefined>(undefined);
   const { toast } = useToast();
 

@@ -6,6 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
 import PrivateRoute from "@/components/auth/PrivateRoute";
+import Layout from "@/components/layout/Layout";
 
 // Pages
 import Index from "./pages/Index";
@@ -46,15 +47,17 @@ const App = () => (
             
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/sermons" element={<Sermons />} />
-              <Route path="/media" element={<Media />} />
-              <Route path="/music" element={<Music />} />
-              <Route path="/radio" element={<Radio />} />
-              <Route path="/announcements" element={<Announcements />} />
-              <Route path="/forums" element={<Forums />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/events" element={<Events />} />
+                <Route path="/sermons" element={<Sermons />} />
+                <Route path="/media" element={<Media />} />
+                <Route path="/music" element={<Music />} />
+                <Route path="/radio" element={<Radio />} />
+                <Route path="/announcements" element={<Announcements />} />
+                <Route path="/forums" element={<Forums />} />
+                <Route path="/profile" element={<Profile />} />
+              </Route>
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

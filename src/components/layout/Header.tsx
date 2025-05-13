@@ -1,7 +1,9 @@
 
+import React from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,95 +13,100 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, LogOut, Settings, User } from "lucide-react";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onToggleSidebar?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   const { authState, logout } = useAuth();
-  
-  const handleLogout = () => {
-    logout();
+
+  const handleLogout = async () => {
+    await logout();
   };
-  
+
+  const getInitials = () => {
+    const user = authState.user;
+    if (!user) return "?";
+    return `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`;
+  };
+
   return (
-    <header className="sticky top-0 z-30 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-16 items-center justify-between border-b border-border px-4">
-        <div className="flex items-center gap-4">
-          <Link to="/" className="flex items-center gap-3">
-            <img 
-              src="/lovable-uploads/f8db5e17-fdcb-4da8-a244-2ec581d2a72c.png" 
-              alt="Repentance and Holiness logo" 
-              className="h-10 w-10 object-contain" 
-            />
-            <div className="font-serif text-lg md:text-xl font-medium text-church-700">
-              Repentance and Holiness
-            </div>
+    <header className="sticky top-0 z-40 w-full border-b bg-background">
+      <div className="container flex h-16 items-center justify-between">
+        <div className="flex items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden mr-2"
+            onClick={onToggleSidebar}
+          >
+            <Menu className="h-6 w-6" />
+            <span className="sr-only">Toggle sidebar</span>
+          </Button>
+          <Link to="/" className="no-underline">
+            <h2 className="text-lg md:text-xl font-semibold">
+              Repentance & Holiness
+            </h2>
           </Link>
         </div>
-
-        <div className="flex items-center gap-4">
-          {authState.isAuthenticated ? (
-            <>
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-0 right-0 flex h-2 w-2 rounded-full bg-church-500"></span>
-              </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage 
-                        src={authState.user?.avatar || ""} 
-                        alt={`${authState.user?.firstName} ${authState.user?.lastName}`} 
-                      />
-                      <AvatarFallback className="bg-church-200 text-church-700">
-                        {authState.user?.firstName?.[0]}
-                        {authState.user?.lastName?.[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>
-                    {authState.user?.firstName} {authState.user?.lastName}
-                  </DropdownMenuLabel>
-                  <DropdownMenuLabel className="font-normal text-xs text-muted-foreground">
-                    {authState.user?.email}
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <Link to="/profile">
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </DropdownMenuItem>
+        {authState.isAuthenticated ? (
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-10 w-10 rounded-full"
+                >
+                  <Avatar>
+                    <AvatarImage
+                      src={authState.user?.avatar}
+                      alt={authState.user?.firstName}
+                    />
+                    <AvatarFallback>{getInitials()}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {authState.user?.firstName} {authState.user?.lastName}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {authState.user?.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/profile" className="w-full cursor-pointer">
+                    Profile
                   </Link>
-                  {(authState.user?.role === "admin" || authState.user?.role === "branch_admin") && (
-                    <Link to="/settings">
-                      <DropdownMenuItem>
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
-                      </DropdownMenuItem>
-                    </Link>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
-          ) : (
-            <>
-              <Link to="/login">
-                <Button variant="outline">Sign In</Button>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button variant="outline" asChild>
+              <Link to="/login" className="no-underline">
+                Login
               </Link>
-              <Link to="/register">
-                <Button>Join Us</Button>
+            </Button>
+            <Button variant="default" asChild>
+              <Link to="/register" className="no-underline">
+                Register
               </Link>
-            </>
-          )}
-        </div>
+            </Button>
+          </div>
+        )}
       </div>
     </header>
   );
