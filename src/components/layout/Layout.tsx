@@ -22,15 +22,15 @@ const Layout: React.FC<LayoutProps> = ({
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       {!hideHeader && <Header />}
-      <div className="flex flex-1">
+      <div className="flex flex-1 relative">
         {!hideSidebar && <Sidebar />}
         <main
           className={cn(
             "flex-1 px-4 py-6 md:px-6 md:py-8",
             {
-              "ml-0": hideSidebar,
+              "ml-0": hideSidebar || isMobile,
               "ml-0 md:ml-64": !hideSidebar && !isMobile,
             },
             className

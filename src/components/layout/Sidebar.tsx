@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import {
@@ -18,21 +18,25 @@ import {
   Radio,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SidebarLinkProps {
   to: string;
   icon: React.ElementType;
   label: string;
   isCollapsed: boolean;
+  isActive: boolean;
 }
 
-const SidebarLink: React.FC<SidebarLinkProps> = ({ to, icon: Icon, label, isCollapsed }) => {
+const SidebarLink: React.FC<SidebarLinkProps> = ({ to, icon: Icon, label, isCollapsed, isActive }) => {
   return (
-    <Link to={to} className="no-underline">
+    <Link to={to} className="w-full no-underline">
       <Button 
         variant="ghost" 
-        className={cn("w-full justify-start mb-1", 
-          isCollapsed ? "px-2" : "px-4"
+        className={cn(
+          "w-full justify-start mb-1",
+          isCollapsed ? "px-2" : "px-4",
+          isActive ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : ""
         )}
       >
         <Icon className={cn("h-5 w-5", isCollapsed ? "mr-0" : "mr-2")} />
@@ -45,8 +49,9 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ to, icon: Icon, label, isColl
 const Sidebar: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { authState } = useAuth();
-  const navigate = useNavigate();
-
+  const location = useLocation();
+  const isMobile = useIsMobile();
+  
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -57,59 +62,50 @@ const Sidebar: React.FC = () => {
   return (
     <div 
       className={cn(
-        "h-screen bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300",
-        isCollapsed ? "w-16" : "w-64"
+        "fixed left-0 top-16 bottom-0 bg-sidebar text-sidebar-foreground flex flex-col z-30 transition-all duration-300 border-r border-sidebar-border",
+        isCollapsed ? "w-16" : "w-64",
+        isMobile ? "transform transition-transform ease-in-out duration-300 -translate-x-full md:translate-x-0" : ""
       )}
     >
       {/* Sidebar header */}
-      <div className="p-4 flex items-center justify-between border-b border-sidebar-border">
+      <div className="p-4 flex items-center justify-between">
         {!isCollapsed && (
           <Link to="/" className="flex items-center no-underline">
-            <h1 className="text-xl font-medium text-sidebar-foreground">
+            <h2 className="text-lg font-medium text-sidebar-foreground truncate">
               {authState.branch?.name || "Church App"}
-            </h1>
+            </h2>
           </Link>
         )}
         <Button 
           variant="ghost" 
           size="sm" 
           onClick={toggleCollapse} 
-          className="text-sidebar-foreground hover:bg-sidebar-accent"
+          className="text-sidebar-foreground hover:bg-sidebar-accent ml-auto"
         >
-          {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
       </div>
       
       {/* Navigation links */}
       <div className="flex-1 p-2 overflow-y-auto">
-        <SidebarLink to="/dashboard" icon={Home} label="Dashboard" isCollapsed={isCollapsed} />
-        <SidebarLink to="/events" icon={Calendar} label="Events" isCollapsed={isCollapsed} />
-        <SidebarLink to="/sermons" icon={Mic} label="Sermons" isCollapsed={isCollapsed} />
-        <SidebarLink to="/media" icon={FileAudio} label="Media" isCollapsed={isCollapsed} />
-        <SidebarLink to="/music" icon={Music} label="Music" isCollapsed={isCollapsed} />
-        <SidebarLink to="/radio" icon={Radio} label="Radio" isCollapsed={isCollapsed} />
-        <SidebarLink to="/announcements" icon={Bell} label="Announcements" isCollapsed={isCollapsed} />
-        <SidebarLink to="/forums" icon={MessageSquare} label="Forums" isCollapsed={isCollapsed} />
+        <SidebarLink to="/dashboard" icon={Home} label="Dashboard" isCollapsed={isCollapsed} isActive={location.pathname === "/dashboard"} />
+        <SidebarLink to="/events" icon={Calendar} label="Events" isCollapsed={isCollapsed} isActive={location.pathname === "/events"} />
+        <SidebarLink to="/sermons" icon={Mic} label="Sermons" isCollapsed={isCollapsed} isActive={location.pathname === "/sermons"} />
+        <SidebarLink to="/media" icon={FileAudio} label="Media" isCollapsed={isCollapsed} isActive={location.pathname === "/media"} />
+        <SidebarLink to="/music" icon={Music} label="Music" isCollapsed={isCollapsed} isActive={location.pathname === "/music"} />
+        <SidebarLink to="/radio" icon={Radio} label="Radio" isCollapsed={isCollapsed} isActive={location.pathname === "/radio"} />
+        <SidebarLink to="/announcements" icon={Bell} label="Announcements" isCollapsed={isCollapsed} isActive={location.pathname === "/announcements"} />
+        <SidebarLink to="/forums" icon={MessageSquare} label="Forums" isCollapsed={isCollapsed} isActive={location.pathname === "/forums"} />
         
         {/* Admin specific links */}
         {authState.user?.role === "admin" || authState.user?.role === "branch_admin" ? (
           <>
             <div className={cn("border-t border-sidebar-border my-2", isCollapsed ? "mx-1" : "mx-4")}></div>
-            <SidebarLink to="/members" icon={Users} label="Members" isCollapsed={isCollapsed} />
-            <SidebarLink to="/profile" icon={User} label="Profile" isCollapsed={isCollapsed} />
+            <SidebarLink to="/members" icon={Users} label="Members" isCollapsed={isCollapsed} isActive={location.pathname === "/members"} />
           </>
-        ) : (
-          <SidebarLink to="/profile" icon={User} label="Profile" isCollapsed={isCollapsed} />
-        )}
-      </div>
-      
-      {/* Branch info */}
-      <div className="p-3 border-t border-sidebar-border text-sm">
-        {!isCollapsed && (
-          <div className="text-xs text-sidebar-foreground/70">
-            {authState.branch?.name}
-          </div>
-        )}
+        ) : null}
+        
+        <SidebarLink to="/profile" icon={User} label="Profile" isCollapsed={isCollapsed} isActive={location.pathname === "/profile"} />
       </div>
     </div>
   );

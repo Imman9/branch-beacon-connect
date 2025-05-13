@@ -1,8 +1,8 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
   DropdownMenu,
@@ -13,13 +13,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import Sidebar from "./Sidebar";
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
+const Header: React.FC<HeaderProps> = () => {
   const { authState, logout } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -33,17 +36,24 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden mr-2"
-            onClick={onToggleSidebar}
-          >
-            <Menu className="h-6 w-6" />
-            <span className="sr-only">Toggle sidebar</span>
-          </Button>
+          {authState.isAuthenticated && (
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="mr-2 md:hidden"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+              <SheetContent side="left" className="p-0 w-64">
+                <Sidebar />
+              </SheetContent>
+            </Sheet>
+          )}
           <Link to="/" className="no-underline">
             <h2 className="text-lg md:text-xl font-semibold">
               Repentance & Holiness
