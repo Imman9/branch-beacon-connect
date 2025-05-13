@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { cn } from "@/lib/utils";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LayoutProps {
   hideHeader?: boolean;
@@ -19,7 +19,7 @@ const Layout: React.FC<LayoutProps> = ({
   className,
   children,
 }) => {
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   return (
     <div className="min-h-screen bg-background">
