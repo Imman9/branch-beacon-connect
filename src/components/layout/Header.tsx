@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
   DropdownMenu,
@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
+    <header className="sticky top-0 z-40 w-full border-b border-church-200 bg-white">
       <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center">
           {authState.isAuthenticated && (
@@ -55,7 +55,7 @@ const Header: React.FC<HeaderProps> = () => {
             </Sheet>
           )}
           <Link to="/" className="no-underline">
-            <h2 className="text-lg md:text-xl font-semibold">
+            <h2 className="text-lg md:text-xl font-semibold text-church-800">
               Repentance & Holiness
             </h2>
           </Link>
@@ -73,7 +73,7 @@ const Header: React.FC<HeaderProps> = () => {
                       src={authState.user?.avatar}
                       alt={authState.user?.firstName}
                     />
-                    <AvatarFallback>{getInitials()}</AvatarFallback>
+                    <AvatarFallback className="bg-church-100 text-church-800">{getInitials()}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -110,7 +110,7 @@ const Header: React.FC<HeaderProps> = () => {
                 Login
               </Link>
             </Button>
-            <Button variant="default" asChild>
+            <Button variant="default" className="bg-church-600 hover:bg-church-700" asChild>
               <Link to="/register" className="no-underline">
                 Register
               </Link>

@@ -36,7 +36,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ to, icon: Icon, label, isColl
         className={cn(
           "w-full justify-start mb-1",
           isCollapsed ? "px-2" : "px-4",
-          isActive ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : ""
+          isActive ? "bg-church-700/10 text-church-700 font-medium" : ""
         )}
       >
         <Icon className={cn("h-5 w-5", isCollapsed ? "mr-0" : "mr-2")} />
@@ -62,7 +62,7 @@ const Sidebar: React.FC = () => {
   return (
     <div 
       className={cn(
-        "fixed left-0 top-16 bottom-0 bg-sidebar text-sidebar-foreground flex flex-col z-30 transition-all duration-300 border-r border-sidebar-border",
+        "fixed left-0 top-16 bottom-0 bg-gradient-to-b from-church-100 to-church-50 text-church-900 flex flex-col z-30 transition-all duration-300 border-r border-church-200",
         isCollapsed ? "w-16" : "w-64",
         isMobile ? "transform transition-transform ease-in-out duration-300 -translate-x-full md:translate-x-0" : ""
       )}
@@ -71,7 +71,7 @@ const Sidebar: React.FC = () => {
       <div className="p-4 flex items-center justify-between">
         {!isCollapsed && (
           <Link to="/" className="flex items-center no-underline">
-            <h2 className="text-lg font-medium text-sidebar-foreground truncate">
+            <h2 className="text-lg font-medium text-church-800 truncate">
               {authState.branch?.name || "Church App"}
             </h2>
           </Link>
@@ -80,7 +80,7 @@ const Sidebar: React.FC = () => {
           variant="ghost" 
           size="sm" 
           onClick={toggleCollapse} 
-          className="text-sidebar-foreground hover:bg-sidebar-accent ml-auto"
+          className="text-church-700 hover:bg-church-200 ml-auto"
         >
           {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
@@ -100,7 +100,7 @@ const Sidebar: React.FC = () => {
         {/* Admin specific links */}
         {authState.user?.role === "admin" || authState.user?.role === "branch_admin" ? (
           <>
-            <div className={cn("border-t border-sidebar-border my-2", isCollapsed ? "mx-1" : "mx-4")}></div>
+            <div className={cn("border-t border-church-200 my-2", isCollapsed ? "mx-1" : "mx-4")}></div>
             <SidebarLink to="/members" icon={Users} label="Members" isCollapsed={isCollapsed} isActive={location.pathname === "/members"} />
           </>
         ) : null}
