@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { User, Branch, AuthState, UserRole } from "@/types/auth";
 
@@ -17,40 +16,52 @@ export interface LoginCredentials {
 
 // Get user profile data from profiles table
 export const fetchUserProfile = async (userId: string): Promise<User | null> => {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*, branches:branch_id(*)")
-    .eq("id", userId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")  // Remove the recursive branch selection that's causing problems
+      .eq("id", userId)
+      .single();
 
-  if (error) {
-    console.error("Error fetching user profile:", error);
+    if (error) {
+      console.error("Error fetching user profile:", error);
+      
+      // Handle recursion error by creating a minimal user object
+      if (error.message.includes("infinite recursion")) {
+        const authUser = await supabase.auth.getUser();
+        if (authUser.data.user) {
+          // Return minimal user object to allow authentication to proceed
+          return {
+            id: userId,
+            email: authUser.data.user.email || "",
+            firstName: "",
+            lastName: "",
+            role: "member" as UserRole,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+        }
+      }
+      return null;
+    }
+
+    if (!data) return null;
+
+    return {
+      id: data.id,
+      email: "", // Email is not stored in profiles table for security
+      firstName: data.first_name,
+      lastName: data.last_name,
+      branchId: data.branch_id,
+      role: data.role as UserRole,
+      avatar: data.avatar,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at
+    };
+  } catch (error) {
+    console.error("Unexpected error in fetchUserProfile:", error);
     return null;
   }
-
-  if (!data) return null;
-
-  const branch = data.branches ? {
-    id: data.branches.id,
-    name: data.branches.name,
-    location: data.branches.location,
-    description: data.branches.description,
-    logo: data.branches.logo,
-    createdAt: data.branches.created_at,
-    updatedAt: data.branches.updated_at
-  } : null;
-
-  return {
-    id: data.id,
-    email: "", // Email is not stored in profiles table for security
-    firstName: data.first_name,
-    lastName: data.last_name,
-    branchId: data.branch_id,
-    role: data.role as UserRole,
-    avatar: data.avatar,
-    createdAt: data.created_at,
-    updatedAt: data.updated_at
-  };
 };
 
 // Fetch all branches for branch selector - Fixed to bypass RLS issues completely

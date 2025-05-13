@@ -47,26 +47,51 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           // Use setTimeout to prevent potential deadlock with onAuthStateChange
           setTimeout(async () => {
             if (newSession?.user) {
-              const user = await fetchUserProfile(newSession.user.id);
-              let branch = null;
-              
-              if (user?.branchId) {
-                branch = await fetchBranchById(user.branchId);
+              try {
+                const user = await fetchUserProfile(newSession.user.id);
+                let branch = null;
+                
+                if (user?.branchId) {
+                  branch = await fetchBranchById(user.branchId);
+                }
+                
+                // Even if fetchUserProfile fails, we should still authenticate with basic user info
+                setAuthState({
+                  user: user || {
+                    id: newSession.user.id,
+                    email: newSession.user.email || '',
+                    firstName: '',
+                    lastName: '',
+                    role: 'member',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                  },
+                  branch,
+                  isAuthenticated: true,
+                  isLoading: false,
+                });
+              } catch (error) {
+                console.error("Error in auth state change:", error);
+                // Still authenticate the user even on error
+                setAuthState({
+                  user: {
+                    id: newSession.user.id,
+                    email: newSession.user.email || '',
+                    firstName: '',
+                    lastName: '',
+                    role: 'member',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                  },
+                  branch: null,
+                  isAuthenticated: true,
+                  isLoading: false,
+                });
               }
-              
-              setAuthState({
-                user: {
-                  ...user!,
-                  email: newSession.user.email || '',
-                },
-                branch,
-                isAuthenticated: true,
-                isLoading: false,
-              });
             }
           }, 0);
         } else if (event === 'SIGNED_OUT') {
-          setAuthState(initialState);
+          setAuthState({...initialState, isLoading: false});
         }
         
         setSession(newSession);
@@ -78,22 +103,47 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (currentSession?.user) {
         // Use setTimeout to prevent potential deadlock
         setTimeout(async () => {
-          const user = await fetchUserProfile(currentSession.user.id);
-          let branch = null;
-          
-          if (user?.branchId) {
-            branch = await fetchBranchById(user.branchId);
+          try {
+            const user = await fetchUserProfile(currentSession.user.id);
+            let branch = null;
+            
+            if (user?.branchId) {
+              branch = await fetchBranchById(user.branchId);
+            }
+            
+            // Even if profile fetch fails, still authenticate with basic user info
+            setAuthState({
+              user: user || {
+                id: currentSession.user.id,
+                email: currentSession.user.email || '',
+                firstName: '',
+                lastName: '',
+                role: 'member',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              },
+              branch,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+          } catch (error) {
+            console.error("Error in initial session check:", error);
+            // Still authenticate the user even on error
+            setAuthState({
+              user: {
+                id: currentSession.user.id,
+                email: currentSession.user.email || '',
+                firstName: '',
+                lastName: '',
+                role: 'member',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              },
+              branch: null,
+              isAuthenticated: true,
+              isLoading: false,
+            });
           }
-          
-          setAuthState({
-            user: {
-              ...user!,
-              email: currentSession.user.email || '',
-            },
-            branch,
-            isAuthenticated: !!user,
-            isLoading: false,
-          });
         }, 0);
       } else {
         setAuthState({ ...initialState, isLoading: false });

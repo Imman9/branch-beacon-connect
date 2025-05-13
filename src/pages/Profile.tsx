@@ -1,309 +1,209 @@
-
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import Layout from "@/components/layout/Layout";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { User } from "@/types/auth";
+import { fetchBranches } from "@/services/supabaseAuth";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { UserProfile } from "@/types/auth";
-import BranchSelector from "@/components/ui-custom/BranchSelector";
-import { UserRound, Mail, UploadCloud } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2 } from "lucide-react";
 
-const formSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  branchId: z.string().optional(),
+const profileSchema = z.object({
+  firstName: z.string().min(2, {
+    message: "First name must be at least 2 characters.",
+  }),
+  lastName: z.string().min(2, {
+    message: "Last name must be at least 2 characters.",
+  }),
 });
 
-const Profile = () => {
-  const { authState, switchBranch } = useAuth();
+type ProfileValues = z.infer<typeof profileSchema>;
+
+const BranchSelector = ({ onBranchSelect }: { onBranchSelect: (branchId: string) => void }) => {
+  const [branches, setBranches] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState<string | undefined>(undefined);
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [avatar, setAvatar] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    authState.user?.avatar || null
-  );
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: authState.user?.firstName || "",
-      lastName: authState.user?.lastName || "",
-      branchId: authState.user?.branchId || "",
-    },
-  });
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setAvatar(file);
-      // Create a URL for the preview
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-    }
-  };
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!authState.user?.id) return;
-    
-    setIsLoading(true);
-    try {
-      // Update profile data
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          first_name: values.firstName,
-          last_name: values.lastName,
-          branch_id: values.branchId,
-        })
-        .eq("id", authState.user.id);
-
-      if (profileError) throw profileError;
-      
-      // Upload avatar if a new one was selected
-      if (avatar) {
-        const fileExt = avatar.name.split(".").pop();
-        const filePath = `${authState.user.id}.${fileExt}`;
-        
-        const { error: uploadError } = await supabase
-          .storage
-          .from("avatars")
-          .upload(filePath, avatar, { upsert: true });
-          
-        if (uploadError) throw uploadError;
-        
-        // Get the public URL
-        const { data: publicUrlData } = supabase
-          .storage
-          .from("avatars")
-          .getPublicUrl(filePath);
-          
-        // Update the profile with the new avatar URL
-        await supabase
-          .from("profiles")
-          .update({ avatar: publicUrlData.publicUrl })
-          .eq("id", authState.user.id);
+  useEffect(() => {
+    const loadBranches = async () => {
+      try {
+        const branchesData = await fetchBranches();
+        setBranches(branchesData);
+      } catch (error) {
+        toast({
+          title: "Error fetching branches",
+          description: "Failed to load branches. Please try again.",
+          variant: "destructive",
+        });
       }
-      
-      // If branch was changed, update the context
-      if (values.branchId && values.branchId !== authState.user.branchId) {
-        await switchBranch(values.branchId);
-      }
-      
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully.",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Failed to update profile",
-        description: error instanceof Error ? error.message : "Please try again later.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    };
+
+    loadBranches();
+  }, [toast]);
+
+  const handleBranchChange = (value: string) => {
+    setSelectedBranch(value);
+    onBranchSelect(value);
   };
 
   return (
-    <Layout>
-      <div className="container py-10">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Your Profile</h1>
-          
-          <div className="grid gap-6">
-            {/* Avatar Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Profile Picture</CardTitle>
-                <CardDescription>
-                  Update your profile picture. This will be visible to other members.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center justify-center py-6">
-                <Avatar className="w-32 h-32 mb-6">
-                  <AvatarImage src={previewUrl || undefined} alt="Profile" />
-                  <AvatarFallback className="text-2xl bg-church-100 text-church-700">
-                    {authState.user?.firstName?.[0]}
-                    {authState.user?.lastName?.[0]}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="flex items-center justify-center w-full">
-                  <label 
-                    htmlFor="avatar-upload" 
-                    className="flex items-center justify-center gap-2 cursor-pointer bg-muted hover:bg-muted/80 text-muted-foreground py-2 px-4 rounded-md transition-colors"
-                  >
-                    <UploadCloud className="h-5 w-5" />
-                    <span>Upload New Picture</span>
-                    <input
-                      id="avatar-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleFileChange}
-                    />
-                  </label>
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Profile Info Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Personal Information</CardTitle>
-                <CardDescription>
-                  Update your personal details and branch affiliation.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>First Name</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <UserRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input 
-                                  placeholder="Your first name" 
-                                  className="pl-10" 
-                                  {...field} 
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Last Name</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <UserRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input 
-                                  placeholder="Your last name" 
-                                  className="pl-10" 
-                                  {...field} 
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <div>
-                      <div className="relative mb-6">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                          value={authState.user?.email || ""} 
-                          disabled 
-                          className="pl-10 bg-muted/50" 
-                        />
-                        <p className="text-xs text-muted-foreground mt-1 ml-1">
-                          Email cannot be changed
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <FormField
-                      control={form.control}
-                      name="branchId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Church Branch</FormLabel>
-                          <FormControl>
-                            <BranchSelector
-                              value={field.value || ""}
-                              onChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Select the church branch you attend.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <div className="mt-6">
-                      <Button 
-                        type="submit" 
-                        className="w-full md:w-auto" 
-                        disabled={isLoading}
-                      >
-                        {isLoading ? "Saving..." : "Save Changes"}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-            
-            {/* Account Info Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Account Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <span className="text-sm font-medium">Account Type</span>
-                  <p className="text-muted-foreground capitalize">
-                    {authState.user?.role.replace('_', ' ')}
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <span className="text-sm font-medium">Member Since</span>
-                  <p className="text-muted-foreground">
-                    {authState.user?.createdAt && formatDistanceToNow(new Date(authState.user.createdAt), { addSuffix: true })}
-                  </p>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline">Change Password</Button>
-                <Button variant="destructive">Delete Account</Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </div>
+    <Select onValueChange={handleBranchChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder="Select a branch" />
+      </SelectTrigger>
+      <SelectContent>
+        {branches.map((branch: any) => (
+          <SelectItem key={branch.id} value={branch.id}>
+            {branch.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+};
+
+const Profile = () => {
+  const { authState } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [branch, setBranch] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (authState.user) {
+      setUser(authState.user);
+    }
+  }, [authState.user]);
+
+  useEffect(() => {
+    if (authState.user?.branchId) {
+      setBranch(authState.user.branchId);
+    }
+  }, [authState.user?.branchId]);
+
+  const form = useForm<ProfileValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      firstName: authState.user?.firstName || "",
+      lastName: authState.user?.lastName || "",
+    },
+    mode: "onChange",
+  });
+
+  useEffect(() => {
+    form.reset({
+      firstName: authState.user?.firstName || "",
+      lastName: authState.user?.lastName || "",
+    });
+  }, [authState.user, form]);
+
+  const handleUpdateProfile = async (values: ProfileValues) => {
+    // Optimistically update the local state
+    setUser({
+      ...authState.user!,
+      firstName: values.firstName,
+      lastName: values.lastName,
+    });
+
+    toast({
+      title: "Profile updated successfully!",
+      description: "Your profile has been updated.",
+    });
+
+    setIsEditing(false);
+  };
+
+  if (authState.isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    </Layout>
+    );
+  }
+
+  if (!authState.isAuthenticated) {
+    navigate("/login");
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Profile</CardTitle>
+            <CardDescription>View and manage your profile information.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="flex flex-col items-center space-y-4">
+              <Avatar className="h-24 w-24">
+                <AvatarImage src={user?.avatar} alt={user?.firstName} />
+                <AvatarFallback>{user?.firstName?.[0]}{user?.lastName?.[0]}</AvatarFallback>
+              </Avatar>
+              <div className="space-y-1">
+                <h4 className="text-sm font-medium leading-none">{user?.firstName} {user?.lastName}</h4>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
+              </div>
+            </div>
+
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleUpdateProfile)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="First Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Last Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormItem>
+                  <FormLabel>Branch</FormLabel>
+                  <FormControl>
+                    <div className="w-full">
+                      <BranchSelector onBranchSelect={setBranch} />
+                    </div>
+                  </FormControl>
+                  <FormDescription>The branch you are affiliated with</FormDescription>
+                </FormItem>
+
+                <Button type="submit" className="w-full church-gradient" disabled={!form.formState.isValid}>
+                  Update Profile
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 
