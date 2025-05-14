@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import Layout from "@/components/layout/Layout";
 import Section from "@/components/ui-custom/Section";
 import Hero from "@/components/ui-custom/Hero";
 import GroupCard from "@/components/features/GroupCard";
@@ -65,7 +64,7 @@ const ForumsPage = () => {
   const [groups] = useState<Group[]>(mockGroups);
 
   return (
-    <Layout>
+    <>
       <Hero 
         title="Church Groups" 
         subtitle="Join a group, connect with members, and grow together in community"
@@ -90,7 +89,7 @@ const ForumsPage = () => {
           ))}
         </CardGrid>
       </Section>
-    </Layout>
+    </>
   );
 };
 

@@ -1,6 +1,4 @@
-
 import { useState } from "react";
-import Layout from "@/components/layout/Layout";
 import Section from "@/components/ui-custom/Section";
 import Hero from "@/components/ui-custom/Hero";
 import AnnouncementCard from "@/components/features/AnnouncementCard";
@@ -53,7 +51,7 @@ const AnnouncementsPage = () => {
   const [announcements] = useState<Announcement[]>(mockAnnouncements);
 
   return (
-    <Layout>
+    <>
       <Hero 
         title="Announcements" 
         subtitle="Stay informed about the latest news and updates from our church"
@@ -72,7 +70,7 @@ const AnnouncementsPage = () => {
           ))}
         </CardGrid>
       </Section>
-    </Layout>
+    </>
   );
 };
 

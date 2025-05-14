@@ -1,6 +1,4 @@
-
 import { useState } from "react";
-import Layout from "@/components/layout/Layout";
 import Section from "@/components/ui-custom/Section";
 import Hero from "@/components/ui-custom/Hero";
 import MediaCard from "@/components/features/MediaCard";
@@ -59,7 +57,7 @@ const MediaPage = () => {
   const [filter] = useState("all");
 
   return (
-    <Layout>
+    <>
       <Hero 
         title="Media Library" 
         subtitle="Browse our collection of videos, photos, and other media from church events"
@@ -93,7 +91,7 @@ const MediaPage = () => {
           ))}
         </CardGrid>
       </Section>
-    </Layout>
+    </>
   );
 };
 

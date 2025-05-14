@@ -1,6 +1,4 @@
-
 import { useState } from "react";
-import Layout from "@/components/layout/Layout";
 import Section from "@/components/ui-custom/Section";
 import Hero from "@/components/ui-custom/Hero";
 import CardGrid from "@/components/ui-custom/CardGrid";
@@ -118,7 +116,7 @@ const MusicPage = () => {
   const [filter] = useState("all");
 
   return (
-    <Layout>
+    <>
       <Hero 
         title="Music Library" 
         subtitle="Listen to worship songs, hymns, and performances from our church"
@@ -152,7 +150,7 @@ const MusicPage = () => {
           ))}
         </CardGrid>
       </Section>
-    </Layout>
+    </>
   );
 };
 

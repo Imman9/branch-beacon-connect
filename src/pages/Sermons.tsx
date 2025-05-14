@@ -1,6 +1,4 @@
-
 import { useState } from "react";
-import Layout from "@/components/layout/Layout";
 import Section from "@/components/ui-custom/Section";
 import Hero from "@/components/ui-custom/Hero";
 import SermonCard from "@/components/features/SermonCard";
@@ -15,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sermon } from "@/types/content";
 
-// Mock sermons data for demonstration
+// Mock sermons data
 const mockSermons: Sermon[] = [
   {
     id: "1",
@@ -57,12 +55,12 @@ const mockSermons: Sermon[] = [
   },
 ];
 
-const Sermons = () => {
+const SermonsPage = () => {
   const [sermons] = useState<Sermon[]>(mockSermons);
   const [filter] = useState("all");
 
   return (
-    <Layout>
+    <>
       <Hero 
         title="Sermons" 
         subtitle="Powerful messages to help you grow in faith and holiness"
@@ -96,8 +94,8 @@ const Sermons = () => {
           ))}
         </CardGrid>
       </Section>
-    </Layout>
+    </>
   );
 };
 
-export default Sermons;
+export default SermonsPage;
