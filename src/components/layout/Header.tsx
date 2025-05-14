@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import Sidebar from "./Sidebar";
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -35,7 +36,10 @@ const Header: React.FC<HeaderProps> = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-church-200 bg-white">
+    <header className={cn(
+      "sticky top-0 z-40 w-full border-b border-church-700 bg-church-900 text-white shadow-md",
+      authState.isAuthenticated ? "" : "bg-white text-church-900 border-church-200"
+    )}>
       <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center">
           {authState.isAuthenticated && (
@@ -43,7 +47,7 @@ const Header: React.FC<HeaderProps> = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="mr-2 md:hidden"
+                className="mr-2 md:hidden text-white hover:bg-church-800"
                 onClick={() => setMobileMenuOpen(true)}
               >
                 <Menu className="h-6 w-6" />
@@ -55,7 +59,10 @@ const Header: React.FC<HeaderProps> = () => {
             </Sheet>
           )}
           <Link to="/" className="no-underline">
-            <h2 className="text-lg md:text-xl font-semibold text-church-800">
+            <h2 className={cn(
+              "text-lg md:text-xl font-semibold",
+              authState.isAuthenticated ? "text-white" : "text-church-800"
+            )}>
               Repentance & Holiness
             </h2>
           </Link>
@@ -66,14 +73,14 @@ const Header: React.FC<HeaderProps> = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-10 w-10 rounded-full"
+                  className="relative h-10 w-10 rounded-full hover:bg-church-800"
                 >
                   <Avatar>
                     <AvatarImage
                       src={authState.user?.avatar}
                       alt={authState.user?.firstName}
                     />
-                    <AvatarFallback className="bg-church-100 text-church-800">{getInitials()}</AvatarFallback>
+                    <AvatarFallback className="bg-church-700 text-white">{getInitials()}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>

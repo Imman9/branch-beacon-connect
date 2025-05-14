@@ -38,32 +38,30 @@ const App = () => (
     <BrowserRouter>
       <AuthProvider>
         <TooltipProvider>
-          <div className="min-h-screen flex flex-col">
-            <Toaster />
-            <Sonner />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              
-              {/* Protected Routes */}
-              <Route element={<PrivateRoute />}>
-                <Route element={<Layout />}>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/events" element={<Events />} />
-                  <Route path="/sermons" element={<Sermons />} />
-                  <Route path="/media" element={<Media />} />
-                  <Route path="/music" element={<Music />} />
-                  <Route path="/radio" element={<Radio />} />
-                  <Route path="/announcements" element={<Announcements />} />
-                  <Route path="/forums" element={<Forums />} />
-                  <Route path="/profile" element={<Profile />} />
-                </Route>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
+            {/* Protected Routes */}
+            <Route element={<PrivateRoute />}>
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/events" element={<Events />} />
+                <Route path="/sermons" element={<Sermons />} />
+                <Route path="/media" element={<Media />} />
+                <Route path="/music" element={<Music />} />
+                <Route path="/radio" element={<Radio />} />
+                <Route path="/announcements" element={<Announcements />} />
+                <Route path="/forums" element={<Forums />} />
+                <Route path="/profile" element={<Profile />} />
               </Route>
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
+            </Route>
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </TooltipProvider>
       </AuthProvider>
     </BrowserRouter>

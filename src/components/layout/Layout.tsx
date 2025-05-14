@@ -21,8 +21,13 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   const isMobile = useIsMobile();
 
+  // Don't render anything in the layout if both header and sidebar are hidden
+  if (hideHeader && hideSidebar) {
+    return <>{children || <Outlet />}</>;
+  }
+
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="flex flex-col bg-background min-h-screen">
       {!hideHeader && <Header />}
       <div className="flex flex-1 relative">
         {!hideSidebar && <Sidebar />}
