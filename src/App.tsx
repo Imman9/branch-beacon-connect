@@ -41,11 +41,12 @@ const App = () => (
           <Toaster />
           <Sonner />
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             
-            {/* Protected Routes */}
+            {/* Protected Routes - All using a single Layout wrapper */}
             <Route element={<PrivateRoute />}>
               <Route element={<Layout />}>
                 <Route path="/dashboard" element={<Dashboard />} />

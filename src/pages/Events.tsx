@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import Layout from "@/components/layout/Layout";
 import Section from "@/components/ui-custom/Section";
 import Hero from "@/components/ui-custom/Hero";
 import EventCard from "@/components/features/EventCard";
@@ -63,7 +62,7 @@ const Events = () => {
   const [filter] = useState("all");
 
   return (
-    <Layout>
+    <>
       <Hero 
         title="Church Events" 
         subtitle="Join us in worship, prayer, and fellowship through our upcoming events"
@@ -100,7 +99,7 @@ const Events = () => {
           ))}
         </CardGrid>
       </Section>
-    </Layout>
+    </>
   );
 };
 
