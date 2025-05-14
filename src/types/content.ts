@@ -119,3 +119,16 @@ export interface Group {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface RadioStation {
+  id: string;
+  name: string;
+  description: string;
+  streamUrl: string;
+  logoUrl?: string;
+  branchId: string;
+  isLive?: boolean;
+  currentShow?: string;
+  createdAt: string;
+  updatedAt: string;
+}
