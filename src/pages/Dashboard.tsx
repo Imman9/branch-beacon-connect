@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Calendar, Mic, Bell, Users, FileAudio, Music } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 const cardImages = [
   "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&q=80&w=1470", // Events image
@@ -21,6 +22,7 @@ interface DashboardCardProps {
   image: string;
   color: string;
   className?: string;
+  linkTo: string;
 }
 
 const DashboardCard: React.FC<DashboardCardProps> = ({ 
@@ -29,30 +31,33 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   icon: Icon, 
   image, 
   color,
-  className 
+  className,
+  linkTo
 }) => {
   return (
-    <Card className={cn("overflow-hidden border-0 shadow-lg group", className)}>
-      <div className="relative">
-        <AspectRatio ratio={16/9}>
-          <img 
-            src={image} 
-            alt={title} 
-            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" 
-          />
-        </AspectRatio>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-      </div>
-      <CardHeader className={cn("pb-2 relative z-10 -mt-16", `bg-${color}`)}>
-        <CardTitle className="text-lg font-medium flex items-center text-white">
-          <Icon className="mr-2 h-5 w-5" />
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-4 bg-white">
-        <p className="text-muted-foreground">{description}</p>
-      </CardContent>
-    </Card>
+    <Link to={linkTo} className="no-underline text-foreground">
+      <Card className={cn("overflow-hidden border-0 shadow-lg group cursor-pointer", className)}>
+        <div className="relative">
+          <AspectRatio ratio={16/9}>
+            <img 
+              src={image} 
+              alt={title} 
+              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" 
+            />
+          </AspectRatio>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+        </div>
+        <CardHeader className={cn("pb-2 relative z-10 -mt-16", `bg-${color}`)}>
+          <CardTitle className="text-lg font-medium flex items-center text-white">
+            <Icon className="mr-2 h-5 w-5" />
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-4 bg-white">
+          <p className="text-muted-foreground">{description}</p>
+        </CardContent>
+      </Card>
+    </Link>
   );
 };
 
@@ -75,6 +80,7 @@ const Dashboard = () => {
           image={cardImages[0]}
           color="church-600"
           className="border-l-4 border-church-600"
+          linkTo="/events"
         />
         
         <DashboardCard
@@ -84,6 +90,7 @@ const Dashboard = () => {
           image={cardImages[1]}
           color="church-700" 
           className="border-l-4 border-church-700"
+          linkTo="/sermons"
         />
         
         <DashboardCard
@@ -93,6 +100,7 @@ const Dashboard = () => {
           image={cardImages[2]}
           color="church-500"
           className="border-l-4 border-church-500" 
+          linkTo="/forums"
         />
         
         <DashboardCard
@@ -102,6 +110,7 @@ const Dashboard = () => {
           image={cardImages[3]}
           color="church-800"
           className="border-l-4 border-church-800"
+          linkTo="/media"
         />
         
         <DashboardCard
@@ -111,6 +120,7 @@ const Dashboard = () => {
           image={cardImages[4]}
           color="church-600"
           className="border-l-4 border-church-600"
+          linkTo="/music"
         />
         
         <DashboardCard
@@ -120,6 +130,7 @@ const Dashboard = () => {
           image={cardImages[5]}
           color="church-700"
           className="border-l-4 border-church-700"
+          linkTo="/announcements"
         />
       </div>
     </div>

@@ -37,8 +37,8 @@ const Header: React.FC<HeaderProps> = () => {
 
   return (
     <header className={cn(
-      "sticky top-0 z-40 w-full border-b border-church-700 bg-church-900 text-white shadow-md",
-      authState.isAuthenticated ? "" : "bg-white text-church-900 border-church-200"
+      "sticky top-0 z-40 w-full border-b shadow-md",
+      authState.isAuthenticated ? "bg-white text-church-900 border-church-200" : "bg-white text-church-900 border-church-200"
     )}>
       <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center">
@@ -47,7 +47,7 @@ const Header: React.FC<HeaderProps> = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="mr-2 md:hidden text-white hover:bg-church-800"
+                className="mr-2 md:hidden text-church-800 hover:bg-church-100"
                 onClick={() => setMobileMenuOpen(true)}
               >
                 <Menu className="h-6 w-6" />
@@ -58,11 +58,13 @@ const Header: React.FC<HeaderProps> = () => {
               </SheetContent>
             </Sheet>
           )}
-          <Link to="/" className="no-underline">
-            <h2 className={cn(
-              "text-lg md:text-xl font-semibold",
-              authState.isAuthenticated ? "text-white" : "text-church-800"
-            )}>
+          <Link to="/" className="no-underline flex items-center">
+            <img 
+              src="/lovable-uploads/660bda31-e9e0-4192-b7a1-63fc12aee703.png" 
+              alt="Repentance & Holiness Logo" 
+              className="h-10 w-10 mr-2"
+            />
+            <h2 className="text-lg md:text-xl font-semibold text-church-800">
               Repentance & Holiness
             </h2>
           </Link>
@@ -73,14 +75,14 @@ const Header: React.FC<HeaderProps> = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-10 w-10 rounded-full hover:bg-church-800"
+                  className="relative h-10 w-10 rounded-full hover:bg-church-100"
                 >
                   <Avatar>
                     <AvatarImage
                       src={authState.user?.avatar}
                       alt={authState.user?.firstName}
                     />
-                    <AvatarFallback className="bg-church-700 text-white">{getInitials()}</AvatarFallback>
+                    <AvatarFallback className="bg-church-600 text-white">{getInitials()}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
