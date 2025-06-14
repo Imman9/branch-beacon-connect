@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import Section from "@/components/ui-custom/Section";
 import Hero from "@/components/ui-custom/Hero";
 import EventCard from "@/components/features/EventCard";
 import CardGrid from "@/components/ui-custom/CardGrid";
-import { Calendar as CalendarIcon, Filter, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, Filter, Check, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -18,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Event } from "@/types/content";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 // Mock events data for demonstration
 const mockEvents: Event[] = [
@@ -68,6 +68,9 @@ const Events = () => {
   const [calendarView, setCalendarView] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
   const [month, setMonth] = useState<Date>(new Date());
+  const { authState } = useAuth();
+
+  const isAdmin = authState.user?.role === "admin" || authState.user?.role === "branch_admin";
 
   // Filter events based on selected filter
   const filteredEvents = events.filter(event => {
@@ -114,6 +117,12 @@ const Events = () => {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Upcoming Events</h2>
           <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Button className="church-gradient">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Event
+              </Button>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center">

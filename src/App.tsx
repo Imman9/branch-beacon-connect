@@ -19,7 +19,7 @@ import Media from "./pages/Media";
 import Music from "./pages/Music";
 import Radio from "./pages/Radio";
 import Announcements from "./pages/Announcements";
-import Forums from "./pages/Forums";
+import Groups from "./pages/Groups";
 import Profile from "./pages/Profile";
 import Bible from "./pages/Bible";
 import NotFound from "./pages/NotFound";
@@ -57,7 +57,7 @@ const App = () => (
                 <Route path="/music" element={<Music />} />
                 <Route path="/radio" element={<Radio />} />
                 <Route path="/announcements" element={<Announcements />} />
-                <Route path="/forums" element={<Forums />} />
+                <Route path="/groups" element={<Groups />} />
                 <Route path="/bible" element={<Bible />} />
                 <Route path="/profile" element={<Profile />} />
               </Route>

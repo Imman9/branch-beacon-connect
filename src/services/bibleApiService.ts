@@ -35,32 +35,38 @@ export const BIBLE_VERSIONS = {
 
 export type BibleVersionKey = keyof typeof BIBLE_VERSIONS;
 
-const getHeaders = (apiKey?: string) => {
-  if (!apiKey) {
-    throw new Error("Bible API key is required. Please set up your API key in the project settings.");
-  }
-  return {
-    "api-key": apiKey,
-    "Content-Type": "application/json",
-  };
-};
+const getHeaders = (apiKey: string) => ({
+  "api-key": apiKey,
+  "Content-Type": "application/json",
+});
 
-// Get API key from environment variable or throw error
-const getBibleApiKey = (): string => {
-  // In a real implementation, this would come from Supabase Edge Functions
-  // For now, we'll provide clear guidance to the user
-  const apiKey = import.meta.env.VITE_BIBLE_API_KEY;
-  if (!apiKey) {
-    throw new Error("Bible API key not configured. Please get a free API key from https://scripture.api.bible and add it to your project settings.");
+// Get API key from Supabase Edge Function
+const getBibleApiKey = async (): Promise<string> => {
+  try {
+    const response = await fetch('/functions/v1/get-bible-api-key', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to retrieve API key');
+    }
+
+    const data = await response.json();
+    return data.apiKey;
+  } catch (error) {
+    console.error('Error getting Bible API key:', error);
+    throw new Error("Bible API key not configured. Please contact administrator to set up the API key.");
   }
-  return apiKey;
 };
 
 export const fetchBibleBooks = async (versionId: string): Promise<BibleBook[]> => {
   console.log(`Fetching books for version: ${versionId}`);
   
   try {
-    const apiKey = getBibleApiKey();
+    const apiKey = await getBibleApiKey();
     const response = await fetch(`${BIBLE_API_BASE_URL}/bibles/${versionId}/books`, {
       headers: getHeaders(apiKey),
     });
@@ -95,7 +101,7 @@ export const fetchBibleChapter = async (
   console.log(`Fetching chapter ${chapterNumber} from book ${bookId}`);
   
   try {
-    const apiKey = getBibleApiKey();
+    const apiKey = await getBibleApiKey();
     const response = await fetch(
       `${BIBLE_API_BASE_URL}/bibles/${versionId}/books/${bookId}/chapters/${chapterNumber}?content-type=text&include-notes=false&include-titles=false&include-chapter-numbers=false&include-verse-numbers=true`,
       {
@@ -169,7 +175,7 @@ export const getChapterInfo = async (
   console.log(`Getting chapter info for book ${bookId}`);
   
   try {
-    const apiKey = getBibleApiKey();
+    const apiKey = await getBibleApiKey();
     const response = await fetch(`${BIBLE_API_BASE_URL}/bibles/${versionId}/books/${bookId}/chapters`, {
       headers: getHeaders(apiKey),
     });

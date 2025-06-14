@@ -113,7 +113,7 @@ const Sidebar: React.FC = () => {
         <SidebarLink to="/music" icon={Music} label="Music" isCollapsed={isCollapsed || isMobile} isActive={location.pathname === "/music"} />
         <SidebarLink to="/radio" icon={Radio} label="Radio" isCollapsed={isCollapsed || isMobile} isActive={location.pathname === "/radio"} />
         <SidebarLink to="/announcements" icon={Bell} label="Announcements" isCollapsed={isCollapsed || isMobile} isActive={location.pathname === "/announcements"} />
-        <SidebarLink to="/forums" icon={MessageSquare} label="Forums" isCollapsed={isCollapsed || isMobile} isActive={location.pathname === "/forums"} />
+        <SidebarLink to="/groups" icon={MessageSquare} label="Groups" isCollapsed={isCollapsed || isMobile} isActive={location.pathname === "/groups"} />
         
         {/* Admin specific links */}
         {authState.user?.role === "admin" || authState.user?.role === "branch_admin" ? (
