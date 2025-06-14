@@ -21,6 +21,7 @@ import Radio from "./pages/Radio";
 import Announcements from "./pages/Announcements";
 import Forums from "./pages/Forums";
 import Profile from "./pages/Profile";
+import Bible from "./pages/Bible";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -57,6 +58,7 @@ const App = () => (
                 <Route path="/radio" element={<Radio />} />
                 <Route path="/announcements" element={<Announcements />} />
                 <Route path="/forums" element={<Forums />} />
+                <Route path="/bible" element={<Bible />} />
                 <Route path="/profile" element={<Profile />} />
               </Route>
             </Route>
