@@ -45,7 +45,16 @@ const BibleNoteForm: React.FC<BibleNoteFormProps> = ({ onNoteCreated }) => {
   const handleSubmit = async (values: BibleNoteValues) => {
     setIsLoading(true);
     try {
-      await createBibleNote(values);
+      // Ensure all values are properly typed as CreateBibleNoteData
+      const noteData: CreateBibleNoteData = {
+        bibleVersion: values.bibleVersion,
+        book: values.book,
+        chapter: values.chapter,
+        verse: values.verse,
+        noteContent: values.noteContent,
+      };
+      
+      await createBibleNote(noteData);
       toast({
         title: "Note created successfully!",
         description: "Your Bible note has been saved.",
