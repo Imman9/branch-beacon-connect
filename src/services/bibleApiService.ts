@@ -1,8 +1,6 @@
 
 // Bible API service for fetching verses from api.bible
 const BIBLE_API_BASE_URL = "https://api.scripture.api.bible/v1";
-// Using a valid demo API key - users should replace with their own for production
-const BIBLE_API_KEY = "b8b9e0e3e9b33b4b8e3e9b33b4b8e3e9"; // Demo key - replace with your own
 
 export interface BibleVerse {
   id: string;
@@ -37,17 +35,34 @@ export const BIBLE_VERSIONS = {
 
 export type BibleVersionKey = keyof typeof BIBLE_VERSIONS;
 
-const getHeaders = () => ({
-  "api-key": BIBLE_API_KEY,
-  "Content-Type": "application/json",
-});
+const getHeaders = (apiKey?: string) => {
+  if (!apiKey) {
+    throw new Error("Bible API key is required. Please set up your API key in the project settings.");
+  }
+  return {
+    "api-key": apiKey,
+    "Content-Type": "application/json",
+  };
+};
+
+// Get API key from environment variable or throw error
+const getBibleApiKey = (): string => {
+  // In a real implementation, this would come from Supabase Edge Functions
+  // For now, we'll provide clear guidance to the user
+  const apiKey = import.meta.env.VITE_BIBLE_API_KEY;
+  if (!apiKey) {
+    throw new Error("Bible API key not configured. Please get a free API key from https://scripture.api.bible and add it to your project settings.");
+  }
+  return apiKey;
+};
 
 export const fetchBibleBooks = async (versionId: string): Promise<BibleBook[]> => {
   console.log(`Fetching books for version: ${versionId}`);
   
   try {
+    const apiKey = getBibleApiKey();
     const response = await fetch(`${BIBLE_API_BASE_URL}/bibles/${versionId}/books`, {
-      headers: getHeaders(),
+      headers: getHeaders(apiKey),
     });
 
     console.log(`API Response status: ${response.status}`);
@@ -55,6 +70,11 @@ export const fetchBibleBooks = async (versionId: string): Promise<BibleBook[]> =
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`API Error: ${response.status} - ${errorText}`);
+      
+      if (response.status === 401) {
+        throw new Error("Invalid API key. Please check your Bible API key configuration.");
+      }
+      
       throw new Error(`Failed to fetch books: ${response.status} ${response.statusText}`);
     }
 
@@ -75,16 +95,22 @@ export const fetchBibleChapter = async (
   console.log(`Fetching chapter ${chapterNumber} from book ${bookId}`);
   
   try {
+    const apiKey = getBibleApiKey();
     const response = await fetch(
       `${BIBLE_API_BASE_URL}/bibles/${versionId}/books/${bookId}/chapters/${chapterNumber}?content-type=text&include-notes=false&include-titles=false&include-chapter-numbers=false&include-verse-numbers=true`,
       {
-        headers: getHeaders(),
+        headers: getHeaders(apiKey),
       }
     );
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`Chapter API Error: ${response.status} - ${errorText}`);
+      
+      if (response.status === 401) {
+        throw new Error("Invalid API key. Please check your Bible API key configuration.");
+      }
+      
       throw new Error(`Failed to fetch chapter: ${response.status} ${response.statusText}`);
     }
 
@@ -143,13 +169,19 @@ export const getChapterInfo = async (
   console.log(`Getting chapter info for book ${bookId}`);
   
   try {
+    const apiKey = getBibleApiKey();
     const response = await fetch(`${BIBLE_API_BASE_URL}/bibles/${versionId}/books/${bookId}/chapters`, {
-      headers: getHeaders(),
+      headers: getHeaders(apiKey),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`Chapter info API Error: ${response.status} - ${errorText}`);
+      
+      if (response.status === 401) {
+        throw new Error("Invalid API key. Please check your Bible API key configuration.");
+      }
+      
       throw new Error(`Failed to fetch chapter info: ${response.status} ${response.statusText}`);
     }
 
