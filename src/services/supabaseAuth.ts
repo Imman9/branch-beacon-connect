@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { User, Branch, AuthState, UserRole } from "@/types/auth";
 
@@ -19,7 +20,7 @@ export const fetchUserProfile = async (userId: string): Promise<User | null> => 
   try {
     const { data, error } = await supabase
       .from("profiles")
-      .select("*")  // Remove the recursive branch selection that's causing problems
+      .select("*")
       .eq("id", userId)
       .single();
 
@@ -61,6 +62,26 @@ export const fetchUserProfile = async (userId: string): Promise<User | null> => 
   } catch (error) {
     console.error("Unexpected error in fetchUserProfile:", error);
     return null;
+  }
+};
+
+// Check if user has specific role
+export const checkUserRole = async (userId: string, role: UserRole): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase.rpc('has_role', {
+      _user_id: userId,
+      _role: role
+    });
+
+    if (error) {
+      console.error("Error checking user role:", error);
+      return false;
+    }
+
+    return data || false;
+  } catch (error) {
+    console.error("Unexpected error in checkUserRole:", error);
+    return false;
   }
 };
 

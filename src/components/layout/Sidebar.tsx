@@ -16,6 +16,7 @@ import {
   Bell,
   FileAudio,
   Radio,
+  Book,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -105,6 +106,7 @@ const Sidebar: React.FC = () => {
       {/* Navigation links */}
       <div className="flex-1 p-2 overflow-y-auto">
         <SidebarLink to="/dashboard" icon={Home} label="Dashboard" isCollapsed={isCollapsed || isMobile} isActive={location.pathname === "/dashboard"} />
+        <SidebarLink to="/bible" icon={Book} label="Bible Study" isCollapsed={isCollapsed || isMobile} isActive={location.pathname === "/bible"} />
         <SidebarLink to="/events" icon={Calendar} label="Events" isCollapsed={isCollapsed || isMobile} isActive={location.pathname === "/events"} />
         <SidebarLink to="/sermons" icon={Mic} label="Sermons" isCollapsed={isCollapsed || isMobile} isActive={location.pathname === "/sermons"} />
         <SidebarLink to="/media" icon={FileAudio} label="Media" isCollapsed={isCollapsed || isMobile} isActive={location.pathname === "/media"} />
