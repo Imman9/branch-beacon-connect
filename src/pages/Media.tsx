@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Section from "@/components/ui-custom/Section";
 import Hero from "@/components/ui-custom/Hero";
@@ -7,7 +6,7 @@ import CardGrid from "@/components/ui-custom/CardGrid";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { Media } from "@/types/content";
+import type { Media } from "@/types/content";
 
 // Mock media data for demonstration
 const mockMedia: Media[] = [

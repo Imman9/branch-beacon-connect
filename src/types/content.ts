@@ -25,6 +25,8 @@ export interface Sermon {
   thumbnailUrl?: string;
   transcription?: string;
   summary?: string;
+  tags?: string[];
+  createdBy: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -102,7 +104,9 @@ export interface Media {
   duration?: number;
   artist?: string;
   album?: string;
+  tags?: string[];
   branchId: string;
+  createdBy: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -116,6 +120,7 @@ export interface Group {
   isOpen: boolean;
   memberCount: number;
   admins: string[];
+  members?: string[];
   createdAt: string;
   updatedAt: string;
 }
