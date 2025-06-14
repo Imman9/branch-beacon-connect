@@ -7,8 +7,6 @@ import { fetchBranches } from "@/services/supabaseAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import ProfilePictureUpload from "@/components/features/ProfilePictureUpload";
 
 const profileSchema = z.object({
   firstName: z.string().min(2, {
@@ -30,7 +29,6 @@ type ProfileValues = z.infer<typeof profileSchema>;
 
 const BranchSelector = ({ onBranchSelect }: { onBranchSelect: (branchId: string) => void }) => {
   const [branches, setBranches] = useState<any[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState<string | undefined>(undefined);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -51,7 +49,6 @@ const BranchSelector = ({ onBranchSelect }: { onBranchSelect: (branchId: string)
   }, [toast]);
 
   const handleBranchChange = (value: string) => {
-    setSelectedBranch(value);
     onBranchSelect(value);
   };
 
@@ -75,7 +72,6 @@ const Profile = () => {
   const { authState } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [branch, setBranch] = useState<string | null>(null);
 
@@ -108,7 +104,6 @@ const Profile = () => {
   }, [authState.user, form]);
 
   const handleUpdateProfile = async (values: ProfileValues) => {
-    // Optimistically update the local state
     setUser({
       ...authState.user!,
       firstName: values.firstName,
@@ -119,8 +114,20 @@ const Profile = () => {
       title: "Profile updated successfully!",
       description: "Your profile has been updated.",
     });
+  };
 
-    setIsEditing(false);
+  const handleAvatarUpdate = (avatarUrl: string) => {
+    if (user) {
+      setUser({
+        ...user,
+        avatar: avatarUrl,
+      });
+    }
+  };
+
+  const getInitials = () => {
+    if (!user) return "?";
+    return `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`;
   };
 
   if (authState.isLoading) {
@@ -144,16 +151,17 @@ const Profile = () => {
             <CardTitle>Your Profile</CardTitle>
             <CardDescription>View and manage your profile information.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="flex flex-col items-center space-y-4">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={user?.avatar} alt={user?.firstName} />
-                <AvatarFallback>{user?.firstName?.[0]}{user?.lastName?.[0]}</AvatarFallback>
-              </Avatar>
-              <div className="space-y-1">
-                <h4 className="text-sm font-medium leading-none">{user?.firstName} {user?.lastName}</h4>
-                <p className="text-sm text-muted-foreground">{user?.email}</p>
-              </div>
+          <CardContent className="grid gap-6">
+            <ProfilePictureUpload
+              currentAvatar={user?.avatar}
+              userId={user?.id || ""}
+              userInitials={getInitials()}
+              onAvatarUpdate={handleAvatarUpdate}
+            />
+
+            <div className="text-center space-y-1">
+              <h4 className="text-sm font-medium leading-none">{user?.firstName} {user?.lastName}</h4>
+              <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
 
             <Form {...form}>
